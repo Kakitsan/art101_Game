@@ -1,63 +1,72 @@
-class Snake {
-  
-  constructor() {
-  	this.body = [];
-    this.body[0] = createVector(floor(w/2), floor(h/2));
-    this.xdir = 0;
-    this.ydir = 0;
-    this.len = 0;
-  }
-  
-  setDir(x, y) {
-  	this.xdir = x;
-    this.ydir = y;
-  }
-  
-  update() {
-  	let head = this.body[this.body.length-1].copy();
-    this.body.shift();
-    head.x += this.xdir;
-    head.y += this.ydir;
-    this.body.push(head);
-  }
-  
-  grow() {
-  	let head = this.body[this.body.length-1].copy();
-    this.len++;
-    this.body.push(head);
-  }
-  
-  endGame() {
-  	let x = this.body[this.body.length-1].x;
-    let y = this.body[this.body.length-1].y;
-    if(x > w-1 || x < 0 || y > h-1 || y < 0) {
+function Snake(){
+  this.x = 0;
+  this.y = 0;
+  this.xspeed = 1;
+  this.yspeed = 0;
+  this.total = 0;
+  this.tail = [];
+
+  this.eat = function(pos){
+
+    var d = dist(this.x, this.y, pos.x, pos.y);
+    if(d < 1){
+       this.total ++;
        return true;
-    }
-    for(let i = 0; i < this.body.length-1; i++) {
-    	let part = this.body[i];
-      if(part.x == x && part.y == y) {
-      	return true;
+       }
+    else{
+       return false;
+       }
+  }
+
+  this.death = function(){
+
+    for(var i = 0; i < this.tail.length; i++){
+      var pos = this.tail[i];
+      var d = dist(this.x, this.y, pos.x, pos.y);
+      if (d < 1){
+        foodcount = 0;
+        this.total = 0;
+        this.tail = [];
+
+
       }
+
     }
-    return false;
   }
-  
-  eat(pos) {
-  	let x = this.body[this.body.length-1].x;
-    let y = this.body[this.body.length-1].y;
-    if(x == pos.x && y == pos.y) {
-      this.grow();
-      return true;
-    }
-    return false;
+
+  this.dir = function(x, y){
+    this.xspeed = x;
+    this.yspeed = y;
   }
-  
-  show() {
-  	for(let i = 0; i < this.body.length; i++) {
-    	fill(0);
-      noStroke();
-      rect(this.body[i].x, this.body[i].y, 1, 1)
+
+  this.update = function(){
+
+    if(this.total === this.tail.length){
+
+            for (var i = 0; i < this.tail.length - 1; i++){
+          this.tail[i] = this.tail [i+1];
+        }
     }
+
+    this.tail[this.total-1] = createVector(this.x, this.y);
+
+    this.x = this.x + this.xspeed * scl;
+    this.y = this.y + this.yspeed * scl;
+
+    this.x = constrain(this.x, 0, width - scl);
+    this.y = constrain(this.y, 0, height - scl);
+  }
+
+  this.show = function(){
+    fill(255);
+    for (var i = 0; i < this.tail.length; i++){
+        image(snakeimg, this.tail[i].x, this.tail[i].y, scl, scl);
+
+
+    }
+
+    fill(255);
+    image(snakeimg, this.x, this.y, scl, scl);
   }
 
 }

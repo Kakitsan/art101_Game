@@ -1,64 +1,71 @@
-// Daniel Shiffman
-// http://youtube.com/thecodingtrain
-// http://codingtra.in
+var s;
+var scl = 40;
+var food;
+var foodcount = 0;
+let bgimg;
+let snakeimg;
+let foodimg;
 
-// Coding Challenge #115: Snake Game Redux
-// https://youtu.be/OMoVcohRgZA
-
-let snake;
-let rez = 20;
-let food;
-let w;
-let h;
+function preload(){
+  bgimg = loadImage('bg.png');
+  foodimg = loadImage('apple.png');
+  snakeimg = loadImage('snake.png');
+}
 
 function setup() {
-  createCanvas(400, 400);
-  w = floor(width / rez);
-  h = floor(height / rez);
-  frameRate(5);
-  snake = new Snake();
-  foodLocation();
+  createCanvas(600, 600);
+  s = new Snake();
+  frameRate(10);
+  pickLocation();
 }
 
-function foodLocation() {
-  let x = floor(random(w));
-  let y = floor(random(h));
-  food = createVector(x, y);
-
-}
-
-function keyPressed() {
-  if (keyCode === LEFT_ARROW) {
-    snake.setDir(-1, 0);
-  } else if (keyCode === RIGHT_ARROW) {
-    snake.setDir(1, 0);
-  } else if (keyCode === DOWN_ARROW) {
-    snake.setDir(0, 1);
-  } else if (keyCode === UP_ARROW) {
-    snake.setDir(0, -1);
-  } else if (key == ' ') {
-    snake.grow();
-  }
-
+function pickLocation(){
+  var cols = floor(width/scl);
+  var rows = floor(height/scl);
+  food = createVector(floor(random(cols)), floor(random(rows)));
+  food.mult(scl);
+  foodcount ++;
+  console.log(foodcount);
 }
 
 function draw() {
-  scale(rez);
-  background(220);
-  if (snake.eat(food)) {
-    foodLocation();
+  if(this.foodcount > 2 & this.foodcount < 5){
+    frameRate(15);
   }
-  snake.update();
-  snake.show();
-
-
-  if (snake.endGame()) {
-    print("END GAME");
-    background(255, 0, 0);
-    noLoop();
+  else if(this.foodcount > 6){
+    frameRate(25);
   }
+  else if(this.foodcount < 1){
+    frameRate(10);
 
-  noStroke();
-  fill(255, 0, 0);
-  rect(food.x, food.y, 1, 1);
+  }
+  background(bgimg);
+
+
+  if (s.eat(food)){
+      pickLocation();
+
+      }
+  s.update();
+  s.show();
+  s.death();
+
+  fill(255, 0, 100);
+  image(foodimg, food.x, food.y, scl + 10, scl + 10);
+}
+
+
+function keyPressed(){
+    if(keyCode === UP_ARROW){
+     s.dir(0, -1);
+     }
+    else if(keyCode === DOWN_ARROW){
+     s.dir(0, 1);
+     }
+    else if(keyCode === RIGHT_ARROW){
+     s.dir(1, 0);
+     }
+    else if(keyCode === LEFT_ARROW){
+     s.dir(-1, 0);
+     }
 }
